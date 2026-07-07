@@ -43,7 +43,7 @@ export default function TeacherAttendancePage() {
 
   return (
     <DashboardLayout
-      breadcrumbs={[{ label: "Teacher Portal", href: "/teacher" }, { label: "Attendance" }]}
+      breadcrumbs={[{ label: "Dashboard", href: "/teacher" }, { label: "Classes", href: "/teacher/classes" }, { label: "Attendance" }]}
       role="teacher"
     >
       <PageHeader

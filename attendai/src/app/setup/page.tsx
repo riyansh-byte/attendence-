@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Shield, Loader2, ArrowRight, ArrowLeft, Plus, Trash2, Mail,
-  BookOpen, Users, Settings2, CheckCircle2, CloudLightning,
+  BookOpen, Users, CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -47,9 +47,7 @@ export default function SetupWizardPage() {
   const [newTeacherEmail, setNewTeacherEmail] = useState("");
   const [newTeacherDept, setNewTeacherDept] = useState("CSE");
 
-  // Step 3: Integrations State
-  const [s3Bucket, setS3Bucket] = useState("attendai-storage-bucket");
-  const [webhookUrl, setWebhookUrl] = useState("https://n8n.workflow.myorg.com/webhook/attendance");
+
 
   // Handlers
   const addDepartment = () => {
@@ -114,11 +112,11 @@ export default function SetupWizardPage() {
           <span className="text-sm font-bold gradient-text">AttendAI Onboarding</span>
         </div>
         <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
-          <span>Step {step} of 4</span>
+          <span>Step {step} of 3</span>
           <div className="w-24 bg-muted h-1.5 rounded-full overflow-hidden">
             <div
               className="bg-brand-500 h-1.5 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 4) * 100}%` }}
+              style={{ width: `${(step / 3) * 100}%` }}
             />
           </div>
         </div>
@@ -305,73 +303,6 @@ export default function SetupWizardPage() {
                   <ArrowLeft className="w-4 h-4" /> Back
                 </Button>
                 <Button onClick={() => setStep(3)} className="btn-brand gap-2 text-xs font-semibold">
-                  Continue to Integrations
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Step 3: Integrations */}
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              className="border bg-card p-6 sm:p-8 rounded-2xl shadow-xl space-y-6"
-            >
-              <div>
-                <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
-                  <Settings2 className="w-5 h-5 text-brand-500" />
-                  Cloud Integrations
-                </h1>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Configure object storage for report files and automate notifications via webhooks.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="s3" className="text-xs font-semibold">AWS S3 Bucket (Reports & Avatars)</Label>
-                  <div className="relative">
-                    <CloudLightning className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="s3"
-                      placeholder="e.g. my-s3-bucket"
-                      value={s3Bucket}
-                      onChange={(e) => setS3Bucket(e.target.value)}
-                      className="pl-9 h-11 text-xs"
-                    />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">
-                    Metadata will save inside Supabase. Actual physical files compile and dump directly into this S3 Bucket.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="webhook" className="text-xs font-semibold">n8n Webhook Endpoint (Workflow Alerts)</Label>
-                  <div className="relative">
-                    <CloudLightning className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="webhook"
-                      placeholder="https://n8n.my-domain.com/..."
-                      value={webhookUrl}
-                      onChange={(e) => setWebhookUrl(e.target.value)}
-                      className="pl-9 h-11 text-xs font-mono"
-                    />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">
-                    This webhook triggers on attendance anomaly states to automate messaging notifications.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center pt-4 border-t">
-                <Button variant="ghost" onClick={() => setStep(2)} className="gap-2 text-xs font-semibold">
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </Button>
-                <Button onClick={() => setStep(4)} className="btn-brand gap-2 text-xs font-semibold">
                   Continue to Summary
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -379,10 +310,10 @@ export default function SetupWizardPage() {
             </motion.div>
           )}
 
-          {/* Step 4: Onboarding Summary & Finish */}
-          {step === 4 && (
+          {/* Step 3: Onboarding Summary & Finish */}
+          {step === 3 && (
             <motion.div
-              key="step4"
+              key="step3"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -399,7 +330,7 @@ export default function SetupWizardPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 border rounded-xl p-4 bg-muted/20 text-left text-xs">
+              <div className="grid grid-cols-2 gap-4 border rounded-xl p-4 bg-muted/20 text-left text-xs">
                 <div>
                   <p className="text-muted-foreground">Departments</p>
                   <p className="font-bold text-lg">{departments.length}</p>
@@ -408,14 +339,10 @@ export default function SetupWizardPage() {
                   <p className="text-muted-foreground">Staff Invited</p>
                   <p className="font-bold text-lg">{teachers.length}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Integrations</p>
-                  <p className="font-bold text-lg text-success">2 Active</p>
-                </div>
               </div>
 
               <div className="flex justify-between items-center pt-4 border-t">
-                <Button variant="ghost" onClick={() => setStep(3)} className="gap-2 text-xs font-semibold" disabled={isLoading}>
+                <Button variant="ghost" onClick={() => setStep(2)} className="gap-2 text-xs font-semibold" disabled={isLoading}>
                   <ArrowLeft className="w-4 h-4" /> Back
                 </Button>
                 <Button

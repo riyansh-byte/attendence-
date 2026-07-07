@@ -127,16 +127,18 @@ export function TopBar({ title, breadcrumbs }: TopBarProps) {
 
       {/* User menu */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="outline-none">
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-            <Avatar className="h-8 w-8 ring-2 ring-primary/20">
-              <AvatarImage src={user?.avatar_url} />
-              <AvatarFallback className="text-xs gradient-brand text-white">
-                {user?.full_name?.split(" ").map((n) => n[0]).join("").slice(0, 2) ?? "A"}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger
+          render={
+            <button className="relative h-8 w-8 rounded-full p-0 outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-full">
+              <Avatar className="h-8 w-8 ring-2 ring-primary/20">
+                <AvatarImage src={user?.avatar_url} />
+                <AvatarFallback className="text-xs gradient-brand text-white">
+                  {user?.full_name?.split(" ").map((n) => n[0]).join("").slice(0, 2) ?? "A"}
+                </AvatarFallback>
+              </Avatar>
+            </button>
+          }
+        />
         <DropdownMenuContent align="end" className="w-64 p-0 overflow-hidden">
           {/* Header card */}
           <div className="flex flex-col items-center gap-3 px-4 py-5 bg-gradient-to-b from-[hsl(var(--primary)/0.15)] to-[hsl(var(--primary)/0.05)] border-b border-border">

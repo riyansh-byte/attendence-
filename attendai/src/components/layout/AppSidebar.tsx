@@ -67,9 +67,8 @@ const teacherNav = [
   {
     label: "Teaching",
     items: [
-      { href: "/teacher/attendance", icon: CalendarCheck, label: "Attendance" },
-      { href: "/teacher/students", icon: Users, label: "Students" },
       { href: "/teacher/classes", icon: BookOpen, label: "Classes" },
+      { href: "/teacher/students", icon: Users, label: "Students" },
       { href: "/teacher/reports", icon: FileText, label: "Reports" },
       { href: "/teacher/leave-requests", icon: ClipboardList, label: "Leave Requests" },
     ],
@@ -94,8 +93,13 @@ const studentNav = [
     items: [
       { href: "/student/attendance", icon: CalendarCheck, label: "Attendance" },
       { href: "/student/leave", icon: ClipboardList, label: "Leave Requests" },
-      { href: "/student/reports", icon: FileText, label: "Reports" },
       { href: "/student/notifications", icon: Bell, label: "Notifications" },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      { href: "/student/settings", icon: Settings, label: "Settings" },
     ],
   },
 ];
