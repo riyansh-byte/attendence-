@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +13,7 @@ import {
   LayoutDashboard, Users, GraduationCap, BookOpen, CalendarCheck,
   BarChart3, FileText, Bell, Workflow, ClipboardList, Settings,
   ChevronLeft, ChevronRight, LogOut, Sun, Moon, Menu,
-  Shield, Building2, UserCheck,
+  Shield, UserCheck,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +28,6 @@ const adminNav = [
     label: "Overview",
     items: [
       { href: "/admin", icon: LayoutDashboard, label: "Dashboard", exact: true },
-      { href: "/admin/organizations", icon: Building2, label: "Organizations" },
     ],
   },
   {
@@ -50,7 +50,6 @@ const adminNav = [
     label: "System",
     items: [
       { href: "/admin/notifications", icon: Bell, label: "Notifications" },
-      { href: "/admin/workflow", icon: Workflow, label: "Workflow Center" },
       { href: "/admin/audit-logs", icon: ClipboardList, label: "Audit Logs" },
       { href: "/admin/settings", icon: Settings, label: "Settings" },
     ],
@@ -67,8 +66,9 @@ const teacherNav = [
   {
     label: "Teaching",
     items: [
-      { href: "/teacher/classes", icon: BookOpen, label: "Classes" },
+      { href: "/teacher/attendance", icon: CalendarCheck, label: "Attendance" },
       { href: "/teacher/students", icon: Users, label: "Students" },
+      { href: "/teacher/classes", icon: BookOpen, label: "Classes" },
       { href: "/teacher/reports", icon: FileText, label: "Reports" },
       { href: "/teacher/leave-requests", icon: ClipboardList, label: "Leave Requests" },
     ],
@@ -89,11 +89,10 @@ const studentNav = [
     ],
   },
   {
-    label: "My Data",
+    label: "My Academics",
     items: [
       { href: "/student/attendance", icon: CalendarCheck, label: "Attendance" },
       { href: "/student/leave", icon: ClipboardList, label: "Leave Requests" },
-      { href: "/student/notifications", icon: Bell, label: "Notifications" },
     ],
   },
   {
@@ -119,6 +118,11 @@ export function AppSidebar({ role = "org_admin" }: AppSidebarProps) {
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
+
+  // Prevent hydration mismatch: useTheme() returns undefined on the server.
+  // Only render theme-dependent JSX after the component has mounted on the client.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const nav = role === "teacher" ? teacherNav : role === "student" ? studentNav : adminNav;
 
@@ -177,7 +181,7 @@ export function AppSidebar({ role = "org_admin" }: AppSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-6 no-scrollbar">
+        <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-6 no-scrollbar">
           {nav.map((group) => (
             <div key={group.label}>
               <AnimatePresence>
@@ -186,13 +190,13 @@ export function AppSidebar({ role = "org_admin" }: AppSidebarProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="section-label px-2 mb-1"
+                    className="section-label px-2 mb-2"
                   >
                     {group.label}
                   </motion.p>
                 )}
               </AnimatePresence>
-              <ul className="space-y-0.5">
+              <ul className="space-y-1">
                 {group.items.map((item) => {
                   const active = isActive(item.href, item.exact);
                   const Icon = item.icon;
@@ -267,13 +271,18 @@ export function AppSidebar({ role = "org_admin" }: AppSidebarProps) {
                     sidebarCollapsed && "justify-center px-0"
                   )}
                 >
-                  {theme === "dark" ? (
-                    <Sun className="w-4 h-4 text-warning shrink-0" />
+                  {mounted ? (
+                    theme === "dark" ? (
+                      <Sun className="w-4 h-4 text-warning shrink-0" />
+                    ) : (
+                      <Moon className="w-4 h-4 text-brand-500 shrink-0" />
+                    )
                   ) : (
-                    <Moon className="w-4 h-4 text-brand-500 shrink-0" />
+                    // Neutral placeholder during SSR — matches server + client
+                    <Sun className="w-4 h-4 text-muted-foreground shrink-0" />
                   )}
                   <AnimatePresence>
-                    {!sidebarCollapsed && (
+                    {!sidebarCollapsed && mounted && (
                       <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                         {theme === "dark" ? "Light Mode" : "Dark Mode"}
                       </motion.span>

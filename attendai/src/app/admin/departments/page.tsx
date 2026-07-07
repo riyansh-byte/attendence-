@@ -12,6 +12,7 @@ import {
   Plus, Search, GraduationCap, Users, BookOpen, Trash2, Edit3, Settings
 } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function DepartmentsPage() {
   const [search, setSearch] = useState("");
@@ -158,16 +159,37 @@ export default function DepartmentsPage() {
                       {dept.is_active ? "Active" : "Inactive"}
                     </Badge>
                   </div>
-                  <h3 className="text-sm font-semibold tracking-tight text-balance mb-2 leading-tight">
-                    {dept.name}
-                  </h3>
+                  <Link href={`/admin/teachers?department=${dept.id}`}>
+                    <h3 className="text-sm font-semibold tracking-tight text-balance mb-1 leading-tight hover:text-primary transition-colors cursor-pointer">
+                      {dept.name}
+                    </h3>
+                  </Link>
+
+                  <div className="flex gap-3 text-[11px] mt-1.5 text-muted-foreground font-medium">
+                    <Link
+                      href={`/admin/students?department=${dept.id}`}
+                      className="flex items-center gap-1 hover:text-primary hover:underline transition-all"
+                    >
+                      <GraduationCap className="w-3.5 h-3.5" />
+                      <span>{dept.student_count ?? 0} Students</span>
+                    </Link>
+                    <Link
+                      href={`/admin/teachers?department=${dept.id}`}
+                      className="flex items-center gap-1 hover:text-primary hover:underline transition-all"
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      <span>{dept.teacher_count ?? 0} Teachers</span>
+                    </Link>
+                  </div>
                 </div>
 
                 <div className="flex justify-between items-center border-t pt-3 mt-4 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>Avg. 84%</span>
-                  </div>
+                  <Link
+                    href={`/admin/teachers?department=${dept.id}`}
+                    className="text-xs text-primary hover:text-primary/80 hover:underline font-semibold transition-all"
+                  >
+                    View Teachers →
+                  </Link>
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" className="h-7 w-7">
                       <Edit3 className="w-3.5 h-3.5" />

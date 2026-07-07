@@ -43,7 +43,7 @@ export default function SettingsPage() {
     >
       <PageHeader
         title="Settings"
-        description="Configure your workspace details, security parameters, automated integrations, and subscription billing"
+        description="Configure your workspace details, security parameters, and subscription billing"
       />
 
       <Tabs defaultValue="general" className="w-full">
@@ -53,9 +53,6 @@ export default function SettingsPage() {
           <TabsList className="bg-muted p-1 rounded-xl border">
             <TabsTrigger value="general" className="gap-2 text-xs">
               <Building2 className="w-4 h-4" /> General
-            </TabsTrigger>
-            <TabsTrigger value="integrations" className="gap-2 text-xs">
-              <Database className="w-4 h-4" /> Integrations
             </TabsTrigger>
             <TabsTrigger value="security" className="gap-2 text-xs">
               <Lock className="w-4 h-4" /> Security
@@ -148,46 +145,6 @@ export default function SettingsPage() {
           </div>
         </TabsContent>
 
-        {/* Tab contents: Integrations */}
-        <TabsContent value="integrations">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <SectionCard title="Cloud Service Connections">
-                <form onSubmit={handleSave} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="s3">AWS S3 Storage Bucket</Label>
-                    <Input
-                      id="s3"
-                      value={s3Bucket}
-                      onChange={(e) => setS3Bucket(e.target.value)}
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      Reports and compiled PDF documents automatically dump in this bucket folder.
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5 border-t pt-4">
-                    <Label htmlFor="n8n">n8n Gateway Webhook Endpoint</Label>
-                    <Input
-                      id="n8n"
-                      value={n8nUrl}
-                      onChange={(e) => setN8nUrl(e.target.value)}
-                      className="font-mono"
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      Active endpoint for trigger execution requests.
-                    </p>
-                  </div>
-
-                  <Button type="submit" disabled={isSaving} className="btn-brand gap-2 text-xs font-semibold">
-                    {isSaving ? "Saving Connections..." : "Save Integrations"}
-                    <Save className="w-4 h-4" />
-                  </Button>
-                </form>
-              </SectionCard>
-            </div>
-          </div>
-        </TabsContent>
 
         {/* Tab contents: Security */}
         <TabsContent value="security">

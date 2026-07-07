@@ -10,9 +10,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { AttendanceBadge } from "@/components/ui/attendance-badge";
-import { mockStudents, mockSessions } from "@/lib/mock-data";
+import { mockStudents, mockSessions, mockDepartments } from "@/lib/mock-data";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   CalendarCheck, CheckCircle2, XCircle, Clock, Users,
   ChevronDown, Save, Loader2, Camera, QrCode, Zap,
@@ -28,14 +28,52 @@ const STATUS_OPTIONS: { value: AttendanceStatus; label: string; color: string }[
   { value: "excused", label: "Excused", color: "text-info" },
 ];
 
+const CLASSES_BY_DEPT: Record<string, { id: string; name: string }[]> = {
+  dept_001: [
+    { id: "cls001", name: "CS301 — Algorithms & Complexities" },
+    { id: "cls004", name: "CS101 — Introduction to Programming" },
+  ],
+  dept_002: [
+    { id: "cls002", name: "EC201 — Signals & Systems" },
+    { id: "cls005", name: "EC101 — Basics of Electronics" },
+  ],
+  dept_003: [
+    { id: "cls003", name: "ME101 — Thermodynamics" },
+    { id: "cls006", name: "ME201 — Strength of Materials" },
+  ],
+  dept_004: [
+    { id: "cls007", name: "CE101 — Surveying" },
+    { id: "cls008", name: "CE201 — Fluid Mechanics" },
+  ],
+  dept_005: [
+    { id: "cls009", name: "BA101 — Management Principles" },
+    { id: "cls010", name: "BA201 — Marketing Management" },
+  ],
+};
+
 export default function AttendancePage() {
+  const [selectedDept, setSelectedDept] = useState("dept_001");
   const [selectedClass, setSelectedClass] = useState("cls001");
-  const [records, setRecords] = useState<Record<string, AttendanceStatus>>(
-    Object.fromEntries(mockStudents.slice(0, 12).map((s) => [s.id, "present"]))
-  );
+  const [records, setRecords] = useState<Record<string, AttendanceStatus>>({});
   const [isSaving, setIsSaving] = useState(false);
 
-  const students = mockStudents.slice(0, 12);
+  const students = useMemo(() => {
+    return mockStudents.filter((s) => s.department_id === selectedDept);
+  }, [selectedDept]);
+
+  useEffect(() => {
+    const deptClasses = CLASSES_BY_DEPT[selectedDept] || [];
+    if (deptClasses.length > 0) {
+      setSelectedClass(deptClasses[0].id);
+    } else {
+      setSelectedClass("");
+    }
+  }, [selectedDept]);
+
+  useEffect(() => {
+    setRecords(Object.fromEntries(students.map((s) => [s.id, "present"])));
+  }, [students]);
+
   const presentCount = Object.values(records).filter((v) => v === "present").length;
   const absentCount = Object.values(records).filter((v) => v === "absent").length;
   const lateCount = Object.values(records).filter((v) => v === "late").length;
@@ -88,15 +126,28 @@ export default function AttendancePage() {
           <SectionCard title="Session Setup">
             <div className="space-y-4">
               <div>
+                <Label className="text-xs mb-1.5">Department</Label>
+                <Select value={selectedDept} onValueChange={(v) => v && setSelectedDept(v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mockDepartments.map((d) => (
+                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label className="text-xs mb-1.5">Class / Section</Label>
                 <Select value={selectedClass} onValueChange={(v) => v && setSelectedClass(v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cls001">CS301 — Algorithms</SelectItem>
-                    <SelectItem value="cls002">EC201 — Signals</SelectItem>
-                    <SelectItem value="cls003">ME101 — Thermodynamics</SelectItem>
+                    {(CLASSES_BY_DEPT[selectedDept] || []).map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -184,7 +235,9 @@ export default function AttendancePage() {
         {/* ── Student Grid (right) ── */}
         <div className="xl:col-span-3">
           <SectionCard
-            title={`Students — CS301 Algorithms`}
+            title={`Students — ${
+              (CLASSES_BY_DEPT[selectedDept] || []).find((c) => c.id === selectedClass)?.name || "Session Class"
+            }`}
             description={`${students.length} students enrolled`}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

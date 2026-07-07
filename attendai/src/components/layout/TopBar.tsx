@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useUIStore, useNotificationStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,6 +28,11 @@ export function TopBar({ title, breadcrumbs }: TopBarProps) {
   const { user, logout } = useAuthStore();
   const router = useRouter();
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleLogout = () => {
     logout();
     router.push("/login");
@@ -42,6 +48,12 @@ export function TopBar({ title, breadcrumbs }: TopBarProps) {
     if (user?.role === "teacher") return "/teacher/settings";
     if (user?.role === "student") return "/student/profile";
     return "/admin/settings";
+  };
+
+  const getNotificationsHref = () => {
+    if (user?.role === "teacher") return "/teacher/notifications";
+    if (user?.role === "student") return "/student/notifications";
+    return "/admin/notifications";
   };
 
   return (
@@ -113,8 +125,8 @@ export function TopBar({ title, breadcrumbs }: TopBarProps) {
         </kbd>
       </button>
 
-      {/* Notifications */}
-      <Link href="/admin/notifications">
+      {/* Notifications — role-aware routing */}
+      <Link href={getNotificationsHref()}>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="w-4.5 h-4.5" />
           {unreadCount > 0 && (
@@ -131,9 +143,9 @@ export function TopBar({ title, breadcrumbs }: TopBarProps) {
           render={
             <button className="relative h-8 w-8 rounded-full p-0 outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-full">
               <Avatar className="h-8 w-8 ring-2 ring-primary/20">
-                <AvatarImage src={user?.avatar_url} />
+                <AvatarImage src={mounted ? user?.avatar_url : undefined} />
                 <AvatarFallback className="text-xs gradient-brand text-white">
-                  {user?.full_name?.split(" ").map((n) => n[0]).join("").slice(0, 2) ?? "A"}
+                  {mounted && user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2) : "A"}
                 </AvatarFallback>
               </Avatar>
             </button>
@@ -143,16 +155,16 @@ export function TopBar({ title, breadcrumbs }: TopBarProps) {
           {/* Header card */}
           <div className="flex flex-col items-center gap-3 px-4 py-5 bg-gradient-to-b from-[hsl(var(--primary)/0.15)] to-[hsl(var(--primary)/0.05)] border-b border-border">
             <Avatar className="h-14 w-14 ring-2 ring-primary/30">
-              <AvatarImage src={user?.avatar_url} />
+              <AvatarImage src={mounted ? user?.avatar_url : undefined} />
               <AvatarFallback className="text-lg gradient-brand text-white">
-                {user?.full_name?.split(" ").map((n) => n[0]).join("").slice(0, 2) ?? "A"}
+                {mounted && user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2) : "A"}
               </AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <p className="text-sm font-semibold leading-tight">{user?.full_name ?? "Admin User"}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{user?.email ?? "admin@attendai.com"}</p>
+              <p className="text-sm font-semibold leading-tight">{mounted && user?.full_name ? user.full_name : "Admin User"}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{mounted && user?.email ? user.email : "admin@attendai.com"}</p>
               <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium capitalize">
-                {user?.role ?? "admin"}
+                {mounted && user?.role ? user.role : "admin"}
               </span>
             </div>
           </div>
